@@ -314,8 +314,7 @@ def nearest_neighbor(start_point, graph):
     total_distance += graph[tour[-1]][start_point]
 
     return total_distance, tour
-    
-# My Solution
+ # My Solution
 
 def thread_helper(start_point, graph, results):
     """
@@ -339,16 +338,13 @@ def heuristic_approach(graph):
         filename (string): The associated filename
     """
 
-    number_threads = 40
+    number_threads = 10
     threads = []
     results = []
 
-    graph_len = len(graph)
-    starting_points = [i * graph_len // number_threads for i in range(number_threads)]
-
     # Spawn X threads where X is number_threads
-    for start in starting_points:
-        #start = random.randint(0, graph_len - 1)
+    for _ in range (number_threads):
+        start = random.randint(0, len(graph) - 1)
         thread = threading.Thread(target=thread_helper, args=(start, graph, results))
         threads.append(thread)
         thread.start()
@@ -360,38 +356,82 @@ def heuristic_approach(graph):
     # Get the smallest found path
     smallest_tuple = min(results, key=lambda x: x[0])
 
-    # Refine around the best starting node
-    best_start = smallest_tuple[1][0]
+    best_start_node = smallest_tuple[1][0]
+
+    # Refinement step: Get the top X nodes closest to the best start node
+    refinement_start_nodes = get_closest_nodes(graph, best_start_node, number_threads)
+
+    # Rerun the algorithm starting from each of the refinement start nodes
     refinement_results = []
-    
-    # Sort nodes by distance to the best start node
-    nodes_by_distance = sorted(range(graph_len), key=lambda node: graph[best_start][node])
-
-    # Select nearby nodes with smallest distances
-    refinement_start_points = nodes_by_distance[:number_threads]
-
-    for start in refinement_start_points:
-        thread = threading.Thread(target=thread_helper, args=(start, graph, refinement_results))
-        threads.append(thread)
+    refinement_threads = []
+    for start_node in refinement_start_nodes:
+        thread = threading.Thread(target=thread_helper, args=(start_node, graph, refinement_results))
+        refinement_threads.append(thread)
         thread.start()
 
-    # Join refinement threads
-    for thread in threads[number_threads:]:
+    # Wait for all refinement threads to finish
+    for thread in refinement_threads:
         thread.join()
 
-    # Get the smallest found path after refinement
+    # Get the best solution found among all refinement threads
     refinement_smallest_tuple = min(refinement_results, key=lambda x: x[0])
 
-    # Save the solution to a file
-    return save_graph_solution(refinement_smallest_tuple[0], refinement_smallest_tuple[1])
+    # Compare the best solution found among all threads with the best solution found during refinement
+    if refinement_smallest_tuple[0] < smallest_tuple[0]:
+        return save_graph_solution(refinement_smallest_tuple[0], refinement_smallest_tuple[1])
+    else:
+        return save_graph_solution(smallest_tuple[0], smallest_tuple[1])
+
+def get_closest_nodes(graph, start_node, num_nodes):
+    """
+    Function to get the top X nodes closest to a given start node.
+
+    Arguements:
+        graph (list of lists): The adjacency matrix representing the graph.
+        start_node (int): The starting node.
+        num_nodes (int): The number of closest nodes to return.
+
+    Returns:
+        list: A list of the top X nodes closest to the start node.
+    """
+    distances = [(node, graph[start_node][node]) for node in range(len(graph)) if node != start_node]
+    distances.sort(key=lambda x: x[1])
+    return [node for node, _ in distances[:num_nodes]]
+
+def random_tour_distance(graph):
+    """
+    Generates a random tour by shuffling the order of nodes
+    It is worth noting there exsiststs a universe in which this works the perfectly first time, hopefully
+    we live in that universe on Friday. It is extremely improbably this is going to work though
+
+
+    Args:
+        graph (2-D Array): The adjacency matrix representing the graph
+
+    Returns:
+        total_distance (int): The total distance traveled in the random tour
+    """
+    num_nodes = len(graph)
+    # Generate a random order of nodes
+    tour = list(range(num_nodes))
+    random.shuffle(tour)
+
+    # Calculate total distance traveled
+    total_distance = 0
+    for i in range(num_nodes):
+        current_node = tour[i]
+        next_node = tour[(i + 1) % num_nodes]  # Wrap around for the last node
+        total_distance += graph[current_node][next_node]
+
+    return save_graph_solution(total_distance, tour)
 
 # Method Calls
 
 # CODE START
 
 # Declare an appropriate graph size, change this value based on what the selected graph is
-currentGraphSize = 2500
-#generate_and_write_graph(currentGraphSize)  # Generates a fully connected graph with 5 points and writes it to a file
+currentGraphSize = 4000
+generate_and_write_graph(currentGraphSize)  # Generates a fully connected graph with 5 points and writes it to a file
 graph = read_graph_from_file("Size" + str(currentGraphSize) + ".graph")
 #print_graph(graph)
 
@@ -401,8 +441,10 @@ sym_graph = convert_to_symmetric_matrix(graph)
 
 start = time.time()
 #file = brute_force_tsp(graph)
-file = nearest_neighbor_helper(2, sym_graph)
+#file = nearest_neighbor_helper(2, sym_graph)
 #file = heuristic_approach(sym_graph)
+file = random_tour_distance(sym_graph)
+
 end = time.time()
 
 print(f"{end-start}")
