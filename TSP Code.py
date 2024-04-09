@@ -503,13 +503,7 @@ def random_cycle_distance(graph):
     # Return randomly chosen path
     return save_graph_solution(total_distance, cycle)
 
-
-
-# Method Calls
-
-# Method Calls
-
-# Method Calls
+# Main Interface
 
 if __name__ == "__main__":
     # Command-line argument parsing
