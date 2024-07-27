@@ -561,6 +561,9 @@ if __name__ == "__main__":
     algorithm = args["--algorithm"] if "--algorithm" in args else "heuristic"
     display = True if "--display" in args else False
     
+    if graph_size < 2:
+        print("Graph size must be 2 or larger, you cannot have a signle node graph")
+        exit()
 
     display_fileName = None
     if "--display" in args and args["--display"] is not None:

@@ -9,9 +9,19 @@ The basic idea of the Traveling Salesman Problem (TSP) is a salesman is given a 
 ## Information
 
 - Author: Tyler Conger
-- Date: 2.23.2024
 
-## Code Overview
+## How to Use this Program
+
+The simpliest way to use this program is simply to run it via the command-line by calling `python .\TSP.py` this will use the default settings for each argument. 
+The potential arguments are:
+
+  - `--gs <int>: Number of vertices in the graph (default: 100)`
+  - `--f <str>: Filename to write or read the graph (default: <graph_size>.graph)`
+  - `--a <str>: Algorithm to solve the TSP (choices: brute_force, nearest_neighbor, heuristic, random_cycle, default: heuristic)`
+  - `--d <str>: Will display the resultant path as a png file (No extension needed in input)`
+  - `--help: Displays all possible commands`
+
+## Overview
 
 There are various ways to solve the TSP and as such three seperate algorithms have been included to solve the problem in different ways. As it is extremely difficult to find a 'true' solution there are various heuristics that have been created to solve them. This codebase covers a brute force method, the nearest neighbor method, as well as a self made heuristic algorithm, and finally an extremely quick 'random cycle' method that just works to generate a potential path. There are also other various helper methods that were created to both help setup and create the graphs as well as work with them. The sections are marked below.
 
