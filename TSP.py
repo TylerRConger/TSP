@@ -550,7 +550,7 @@ if __name__ == "__main__":
         print("  --gs <int>: Number of vertices in the graph (default: 100)")
         print("  --f <str>: Filename to write or read the graph (default: <graph_size>.graph)")
         print("  --a <str>: Algorithm to solve the TSP (choices: brute_force, nearest_neighbor, heuristic, random_cycle, default: heuristic)")
-        print("  --d <fileName>: Will display the resultant path as a png file")
+        print("  --d <str>: Will display the resultant path as a png file (No extension needed in input)")
         print("  --help: Displays all possible commands")
         exit()
 
@@ -583,7 +583,7 @@ if __name__ == "__main__":
 
     pathway = []
 
-    graph = read_graph_from_file(filename)
+    graph = read_graph_from_file(file_path)
     if algorithm == "brute_force" or algorithm == "bf":
         print("Brute force algorithm called.")
         pathway = brute_force_tsp(graph)

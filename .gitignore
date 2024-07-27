@@ -1,3 +1,7 @@
 /graphs/*
 /images/*
 /solutions/*
+
+!/graphs/.gitkeep
+!/solutions/.gitkeep
+!/images/.gitkeep
