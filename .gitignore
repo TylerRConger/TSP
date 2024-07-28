@@ -1,7 +1,9 @@
-/graphs/*
-/images/*
-/solutions/*
+/TSP/graphs/*
+/TSP/images/*
+/TSP/solutions/*
+/MaxClique/graphs/*
 
-!/graphs/.gitkeep
-!/solutions/.gitkeep
-!/images/.gitkeep
+!/TSP/graphs/.gitkeep
+!/TSP/solutions/.gitkeep
+!/TSP/images/.gitkeep
+!/MaxClique/graphs/.gitkeep
